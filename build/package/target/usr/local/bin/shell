@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+REBOOT_DELAY="30"
+
+fail () {
+    echo "$1"
+    echo "The system will be rebooted in ${REBOOT_DELAY} seconds."
+    sleep "${REBOOT_DELAY}"
+    systemctl reboot
+    exit 1
+}
+
+shell () {
+    exec bash
+}
+
+for SRC in \
+    "/archshell/env/uri.env" \
+    "/archshell/env/dhcp.env" \
+    "/archshell/env/file.env"
+do
+    if [ -f "$SRC" ]; then
+        source "$SRC"
+
+        break 
+    fi
+done
+
+URI="$(echo "$URI" | sed --regexp-extended --silent 's/^.*#(.*)$/\1/p')"
+
+if [[ -n "$FAIL" ]]; then
+    fail "$FAIL"
+elif [[ -n "$URI" ]]; then
+    if ! curl \
+        --output "/archshell/entrypoint" \
+        --silent \
+        --fail \
+        "$URI"
+    then
+        fail "Could not download the entry script!"
+    fi
+
+    chmod +x "/archshell/entrypoint"
+elif  [[ -n "$FILE" ]]; then
+    ln --symbolic "/efi/${FILE}" "/archshell/entrypoint"
+else
+    shell
+fi
+
+exec "/archshell/entrypoint"
