@@ -26,7 +26,11 @@ do
     fi
 done
 
-URI="$(echo "$URI" | sed --regexp-extended --silent 's/^.*#(.*)$/\1/p')"
+[[ -n "$URI" ]] && \
+    URI="$(echo "$URI" | sed --regexp-extended --silent 's/^.*#(.*)$/\1/p')"
+
+[[ -n "$FILE" ]] && \
+    FILE="/efi/$(dirname "$FILE")/archshell.sh"
 
 if [[ -n "$FAIL" ]]; then
     fail "$FAIL"
@@ -41,8 +45,8 @@ elif [[ -n "$URI" ]]; then
     fi
 
     chmod +x "/archshell/entrypoint"
-elif  [[ -n "$FILE" ]]; then
-    ln --symbolic "/efi/${FILE}" "/archshell/entrypoint"
+elif  [[ -e "$FILE" ]]; then
+    ln --symbolic "${FILE}" "/archshell/entrypoint"
 else
     shell
 fi
