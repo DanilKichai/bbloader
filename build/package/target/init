@@ -6,7 +6,8 @@ fail () {
     echo "$1"
     echo "The system will be rebooted in ${REBOOT_DELAY} seconds."
     sleep "${REBOOT_DELAY}"
-    reboot
+    reboot --force
+    sleep infinity
 }
 
 if ! mount -t efivarfs efivars /archshell/efivars; then
