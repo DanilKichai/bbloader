@@ -10,7 +10,7 @@ FROM --platform=linux/amd64 golang:latest as builder
         -o /usr/local/bin/bootstrap \
         .
 FROM --platform=linux/amd64 archlinux:base as wrapper
-  ADD hack/etc/pacman.d/mirrorlist /etc/pacman.d/
+  #ADD hack/etc/pacman.d/mirrorlist /etc/pacman.d/
 
   RUN \
     pacman \
@@ -64,7 +64,7 @@ FROM --platform=linux/amd64 archlinux:base as wrapper
   COPY --from=builder \
     /usr/local/bin/bootstrap \
     /target/usr/local/bin/
-  RUN echo -e "debug\ndebug" | passwd --root /target
+  #RUN echo -e "debug\ndebug" | passwd --root /target
 
   RUN mkinitcpio --preset wrapper
 
