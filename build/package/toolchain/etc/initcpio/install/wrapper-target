@@ -2,7 +2,10 @@
 
 build() {
     command cp --recursive /target/* "${BUILDROOT}"
-    command mkdir --parents "${BUILDROOT}/archshell/efivars"
+
+    command mkdir --parents \
+        "${BUILDROOT}/archshell/efivars" \
+        "${BUILDROOT}/archshell/downloads" 
 }
 
 help() {

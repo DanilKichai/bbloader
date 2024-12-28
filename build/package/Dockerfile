@@ -56,6 +56,7 @@ FROM --platform=linux/amd64 archlinux:base as wrapper
       core/udev \
       core/util-linux \
       extra/kexec-tools \
+      extra/polkit \
       extra/qrencode \
       extra/tcpdump \
       extra/traceroute
