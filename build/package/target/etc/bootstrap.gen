@@ -112,17 +112,17 @@
 
     [DHCPv4]
     ClientIdentifier=mac
-    UseHostname=no
     VendorClassIdentifier=HTTPClient:Arch:00016
     RequestOptions=67
+    UseHostname=yes
     {{- end }}
     {{- with .IPv6 }}
 
     [DHCPv6]
     ClientIdentifier=mac
-    UseHostname=no
     VendorClassIdentifier=HTTPClient:Arch:00016
     RequestOptions=59
+    UseHostname=yes
     WithoutRA={{ if .Stateful }}solicit{{ else }}information-request{{ end }}
     {{- end }}
 {{- if or (and .IPv4 (not .IPv4.Static)) (and .IPv6 (not .IPv6.Static)) }}

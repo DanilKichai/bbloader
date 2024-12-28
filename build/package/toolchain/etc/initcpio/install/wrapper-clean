@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+build() {
+    command rm --recursive --force \
+        "${BUILDROOT}/etc/hostname" \
+        "${BUILDROOT}/etc/machine-id" \
+        "${BUILDROOT}/etc/machine-info" \
+        "${BUILDROOT}/var/lib/systemd/credential.secret" \
+        "${BUILDROOT}/var/lib/systemd/random-seed"
+}
+
+help() {
+    cat <<HELPEOF
+This hook cleans up the target files.
+HELPEOF
+}

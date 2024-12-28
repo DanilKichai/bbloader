@@ -14,5 +14,5 @@ timeout "$WAIT_TIMEOUT" awk '{
 }' <"${URI_FIFO}" >"${URI_FILE}"
 
 if [[ "$?" -ne "0" ]]; then
-    echo 'FAIL="Could not determine the URI with DHCP inspection!"' >"${URI_FILE}"
+    echo 'ERROR="Could not determine the URI with DHCP inspection!"' >"${URI_FILE}"
 fi

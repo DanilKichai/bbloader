@@ -1,26 +1,20 @@
 #!/usr/bin/env bash
 
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+source "/archshell/include/fatal.sh"
 
-fail () {
-    echo "$1"
-    echo "The system will be rebooted in ${REBOOT_DELAY} seconds."
-    sleep "${REBOOT_DELAY}"
-    reboot --force
-    sleep infinity
-}
-
-if ! mount -t efivarfs efivars /archshell/efivars; then
-    fail "Mount efivarfs failed!"
+if ! mount \
+    --types efivarfs \
+    efivars /archshell/efivars
+then
+    fatal "Mount efivarfs failed!"
 fi
 
 if ! bootstrap \
     --efivars /archshell/efivars
 then
-    fail "Bootstrap failed!"
+    fatal "Bootstrap failed!"
 fi
 
 exec \
     /usr/lib/systemd/systemd \
-        --unit=shell.service \
-        --machine-id="$(uuidgen | tr -d "-")"
+        --unit=shell.service

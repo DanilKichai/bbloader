@@ -1,18 +1,8 @@
 #!/usr/bin/env bash
 
-REBOOT_DELAY="30"
-
-fail () {
-    echo "$1"
-    echo "The system will be rebooted in ${REBOOT_DELAY} seconds."
-    sleep "${REBOOT_DELAY}"
-    systemctl reboot
-    exit 1
-}
-
-shell () {
-    exec bash
-}
+source "/archshell/include/fatal.sh"
+source "/archshell/include/chainload.sh"
+source "/archshell/include/cmd.sh"
 
 for SRC in \
     "/archshell/env/uri.env" \
@@ -32,23 +22,15 @@ done
 [[ -n "$FILE" ]] && \
     FILE="/efi/$(dirname "$FILE")/archshell.sh"
 
-if [[ -n "$FAIL" ]]; then
-    fail "$FAIL"
+if [[ -n "$ERROR" ]]; then
+    fatal "$ERROR"
 elif [[ -n "$URI" ]]; then
-    if ! curl \
-        --output "/archshell/entrypoint" \
-        --silent \
-        --fail \
-        "$URI"
-    then
-        fail "Could not download the entry script!"
-    fi
-
-    chmod +x "/archshell/entrypoint"
+    ! chainload_uri "$URI" && \
+        fatal "Failed to chainload the URI: \"$URI\"!"
 elif  [[ -e "$FILE" ]]; then
-    ln --symbolic "${FILE}" "/archshell/entrypoint"
+    ! chainload_file "$FILE" && \
+        fatal "Failed to chainload the file: \"$FILE\"!"
 else
-    shell
+    ! command_line && \
+        fatal "Failed to call a command-line!"
 fi
-
-exec "/archshell/entrypoint"
