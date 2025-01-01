@@ -20,13 +20,13 @@ chainload_uri () {
         --fail \
         "$URI"
     then
-        echo "Failed to download file via URI: \"$URI\"!" 1>&2
+        echo "Failed to download the file via URI: \"$URI\"!" 1>&2
 
         return 1
     fi
 
     if ! chmod +x "$FILE"; then
-        echo "Failed to chmod file: \"$FILE\"!" 1>&2
+        echo "Failed to chmod the file: \"$FILE\"!" 1>&2
 
         return 1
     fi

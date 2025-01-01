@@ -5,11 +5,12 @@ fatal () {
     local DELAY="30"
 
     echo "$MESSAGE" 1>&2
-    echo "The system will be rebooted in ${DELAY} seconds."
+    echo "The system will be rebooted in ${DELAY} seconds. Press enter to skip..."
 
-    sleep "${DELAY}"
+    timeout --foreground "${DELAY}" bash -c "read" && \
+        sleep infinity
 
-    if mountpoint /run; then
+    if mountpoint --quiet /run; then
         systemctl reboot
     else
         reboot --force
