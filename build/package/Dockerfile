@@ -10,7 +10,7 @@ FROM --platform=linux/amd64 golang:latest as builder
         -o /usr/local/bin/bootstrap \
         .
 FROM --platform=linux/amd64 archlinux:base as wrapper
-  #ADD hack/etc/pacman.d/mirrorlist /etc/pacman.d/
+  ADD hack/etc/pacman.d/mirrorlist /etc/pacman.d/
 
   RUN \
     pacman \
@@ -25,11 +25,9 @@ FROM --platform=linux/amd64 archlinux:base as wrapper
   RUN \
     mkdir \
       --parents \
-      /tmp/pacman \
-      /target && \
+      /target/var/lib/pacman && \
     pacman \
       --root /target \
-      --dbpath /tmp/pacman \
       --sync \
       --sysupgrade \
       --refresh \
@@ -51,10 +49,13 @@ FROM --platform=linux/amd64 archlinux:base as wrapper
       core/lvm2 \
       core/nano \
       core/procps-ng \
+      core/pacman \
       core/sed \
       core/systemd \
       core/udev \
       core/util-linux \
+      extra/arch-install-scripts \
+      extra/debootstrap \
       extra/kexec-tools \
       extra/polkit \
       extra/qrencode \
@@ -65,7 +66,10 @@ FROM --platform=linux/amd64 archlinux:base as wrapper
   COPY --from=builder \
     /usr/local/bin/bootstrap \
     /target/usr/local/bin/
-  #RUN echo -e "debug\ndebug" | passwd --root /target
+  RUN cp \
+    /etc/pacman.d/mirrorlist \
+    /target/etc/pacman.d/
+  RUN echo -e "debug\ndebug" | passwd --root /target
 
   RUN mkinitcpio --preset wrapper
 
