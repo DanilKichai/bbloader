@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.2.1
+# syntax=docker/dockerfile:1
 
 FROM --platform=linux/amd64 golang:latest as builder
   COPY . /usr/src/archshell
@@ -9,6 +9,7 @@ FROM --platform=linux/amd64 golang:latest as builder
         -ldflags='-extldflags=-static' \
         -o /usr/local/bin/bootstrap \
         .
+
 FROM --platform=linux/amd64 archlinux:base as wrapper
   ADD hack/etc/pacman.d/mirrorlist /etc/pacman.d/
 
@@ -19,58 +20,42 @@ FROM --platform=linux/amd64 archlinux:base as wrapper
       --refresh \
       --noconfirm \
       --needed \
-      core/linux
-  ADD build/package/toolchain/ /
-
-  RUN \
-    mkdir \
-      --parents \
-      /target/var/lib/pacman && \
-    pacman \
-      --root /target \
-      --sync \
-      --sysupgrade \
-      --refresh \
-      --noconfirm \
-      --needed \
-      core/bash \
+      core/binutils \
       core/curl \
-      core/coreutils \
-      core/cryptsetup \
       core/dosfstools \
       core/e2fsprogs \
       core/efibootmgr \
-      core/gawk \
-      core/grep \
-      core/gzip \
-      core/iproute2 \
-      core/iputils \
       core/less \
       core/lvm2 \
       core/nano \
-      core/procps-ng \
-      core/pacman \
-      core/sed \
-      core/systemd \
-      core/udev \
-      core/util-linux \
       extra/arch-install-scripts \
       extra/debootstrap \
       extra/kexec-tools \
       extra/polkit \
-      extra/qrencode \
       extra/tcpdump \
       extra/traceroute
-  ADD build/package/target/ /target/
 
-  COPY --from=builder \
-    /usr/local/bin/bootstrap \
-    /target/usr/local/bin/
-  RUN cp \
-    /etc/pacman.d/mirrorlist \
-    /target/etc/pacman.d/
+  WORKDIR /target
+  RUN \
+    tar \
+      --create \
+      --file - \
+      --one-file-system \
+      --exclude=target \
+      --exclude=var/cache \
+      --exclude=run/* \
+      / | tar --extract --file -
+  ADD build/package/target/ /target/
+  COPY --from=builder /usr/local/bin/bootstrap /target/usr/local/bin/
   RUN echo -e "debug\ndebug" | passwd --root /target
 
+  RUN \
+    pacman \
+      --sync \
+      --noconfirm \
+      --needed \
+      core/linux
+  ADD build/package/toolchain/ /
   RUN mkinitcpio --preset wrapper
 
 FROM scratch as target

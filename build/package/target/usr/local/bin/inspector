@@ -44,7 +44,7 @@ inspect_packet () {
 
     ### IPv4 DHCPv4 inspection
 
-    # Get IPv4 paraeters
+    # Get IPv4 parameters
 
     IP4_SRC_PORT="$(get_param 's/^[0-9]+.[0-9]+.[0-9]+.[0-9]+\.([0-9]+) > [0-9]+.[0-9]+.[0-9]+.[0-9]+\.[0-9]+: .*$/\1/p' 1 "$@")"
     IP4_DST_PORT="$(get_param 's/^[0-9]+.[0-9]+.[0-9]+.[0-9]+\.[0-9]+ > [0-9]+.[0-9]+.[0-9]+.[0-9]+\.([0-9]+): .*$/\1/p' 1 "$@")"
@@ -93,7 +93,7 @@ inspect_packet () {
 
     ### IPv6 DHCPv6 inspection
 
-    # Get IPv6 paraeters
+    # Get IPv6 parameters
 
     IP6_SRC_PORT="$(get_param 's/.* [0-9a-f:]+\.([0-9]+) > [0-9a-f:]+\.[0-9]+.*$/\1/p' 0 "$@")"
     IP6_DST_PORT="$(get_param 's/.* [0-9a-f:]+\.[0-9]+ > [0-9a-f:]+\.([0-9]+).*$/\1/p' 0 "$@")"
